@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+
+
+<head>
+ <meta charset="UTF-8">
+ 
+	<title>Ping-Pong</title>
+</head>
+<body>
+<p><h2 id="score"> </h2><button onclick="location.reload()">Играть сначала</button></p>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script>
+var cvs = document.getElementById("canvas");
+var ctx = cvs.getContext("2d");
+
+var Sc=0;
+
+var speedGame=1;
+
+var w=canvas.width;
+var h=canvas.height;
+
+var bitaPosX=160;
+var bitaPosY=380;
+
+var bitaW=80;
+var bitaH=10;
+var bitDir=0;
+
+
+
+var ballR=8;
+var ballPosX=200;
+var ballPosY=200;
+var dirBallX=1;
+var dirBallY=1;
+
+var score_audio = new Audio();
+var pobeda = new Audio();
+var konec = new Audio();
+var err = new Audio();
+score_audio.src = "audio/score.mp3";
+pobeda.src = "audio/pobeda.mp3";
+konec.src = "audio/konec.mp3";
+err.src = "audio/err.wav";
+
+function draw () {
+ctx.clearRect(0, 0, w, h); 
+ctx.strokeRect(0, 0, w, h); //Площадка
+
+ctx.fillRect(bitaPosX,bitaPosY , bitaW, bitaH); //Бита
+bitaPosX=bitaPosX+speedGame*bitDir;
+
+
+ctx.beginPath();
+ctx.arc(ballPosX,ballPosY, ballR, 0 ,2*Math.PI , false); //Мячик
+ctx.fill();
+ctx.closePath();
+
+
+
+ballPosX=ballPosX+speedGame*dirBallX;
+ballPosY=ballPosY+speedGame*dirBallY;
+
+if (ballPosX>=w-ballR){
+dirBallX=-1;
+}
+
+
+if (ballPosX<=ballR){
+dirBallX=Math.random() * (2 - 0.5) + 0.5;;
+}
+if (ballPosY<=ballR){
+dirBallY=Math.random() * (2 - 0.5) + 0.5;;
+}
+
+if (ballPosY>=h-ballR){
+dirBallY=-1;
+Sc=Sc-1;
+err.play();
+}
+
+if (ballPosX>=bitaPosX && ballPosX<=bitaPosX+bitaW && ballPosY>=bitaPosY){
+dirBallY=-1;
+Sc=Sc+1;
+score_audio.play();
+}
+document.onkeydown=function(e){
+if (e.keyCode==37 ) {
+bitDir=-1;
+}
+if (e.keyCode==39 ) {
+bitDir=1;
+}
+}
+document.onkeyup=function(e){
+if (e.keyCode==37 ||  e.keyCode==39) {
+bitDir=0;
+}
+}
+if (bitaPosX<5 ) {
+bitDir=0;
+}
+if (bitaPosX>w-bitaW-5 ) {
+bitDir=0;
+}
+document.getElementById("score").innerHTML=Sc;
+if (Sc>=10){
+document.getElementById("score").innerHTML="ПОБЕДА!";
+ballPosX=200;
+ballPosY=200;
+pobeda.play();
+setTimeout();
+location.reload();
+}
+if (Sc<-1){
+document.getElementById("score").innerHTML="ВЫ ПРОИГРАЛИ(";
+//konec.play();
+ballPosX=200;
+ballPosY=200;
+setTimeout();
+
+//location.reload();
+}
+if (Sc>5){
+speedGame=2;
+}
+
+}
+
+
+
+setInterval(draw,speedGame);
+
+
+
+
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
